@@ -38,6 +38,7 @@
     if (!self) {
         return nil;
     }
+    self.hideNotThisMonthDays = NO;
     self.indexesOfSelectedButtons = [NSIndexSet indexSet];
 	self.selectedButtons = [NSArray array];
     return self;
@@ -66,7 +67,11 @@
         [dayButtons addObject:button];
         [self.contentView addSubview:button];
         [self configureButton:button];
-        [button setTitleColor:[self.textColor colorWithAlphaComponent:0.5f] forState:UIControlStateDisabled];
+
+        UIColor *backgroundPattern = [UIColor colorWithPatternImage:[self notThisMonthBackgroundImage]];
+        button.backgroundColor = backgroundPattern;
+        UIColor *disabledTitleColor = self.disabledTextColor ? self.disabledTextColor : [self.textColor colorWithAlphaComponent:0.5f];
+        [button setTitleColor:disabledTitleColor forState:UIControlStateDisabled];
     }
     self.dayButtons = dayButtons;
 }
@@ -150,7 +155,9 @@
 
         NSInteger thisDayMonth = thisDateComponents.month;
         if (self.monthOfBeginningDate != thisDayMonth) {
-            [self.notThisMonthButtons[index] setHidden:NO];
+            if (!self.hideNotThisMonthDays) {
+                [self.notThisMonthButtons[index] setHidden:NO];   
+            }
         } else {
 
             if ([self.todayDateComponents isEqual:thisDateComponents]) {
